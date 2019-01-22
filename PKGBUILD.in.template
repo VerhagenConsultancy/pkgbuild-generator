@@ -1,0 +1,55 @@
+# Maintainer: Bart Verhagen <barrie.verhagen at gmail dot com>
+pkgname=('@PACKAGE@')
+pkgbase='@PACKAGE@'
+pkgver=@VERSION@
+pkgrel=1
+epoch=
+pkgdesc="<description>"
+arch=('any')
+url="<project-url>"
+license=('<license>')
+groups=()
+depends=()
+makedepends=('dependency1' 'dependency2>=1.0.0')
+checkdepends=()
+optdepends=()
+provides=('@PACKAGE@=@VERSION@')
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=@CHANGELOG@
+source=('@PACKAGE@::git+$url.git#@GIT_REF@')
+noextract=()
+validpgpkeys=()
+
+_git_dir='@PACKAGE@'
+_build_dir='build'
+
+_exec_helper_build_targets=('target1' 'target2')
+
+_test_binary='binary'
+_exec_helper_test_targets=(${_test_binary})
+
+pkgver() {
+    printf "%s" $pkgver
+}
+
+build() {
+    cmake -G "Unix Makefiles" -H"$_git_dir" -B"$_build_dir" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$pkgdir/usr/" -DCMAKE_INSTALL_LIBDIR="lib"
+    make --directory "$_build_dir" ${_exec_helper_build_targets[@]}
+}
+
+check() {
+    cmake -G "Unix Makefiles" -H"$_git_dir" -B"$_build_dir"
+    make --directory "$_build_dir" ${_exec_helper_test_targets[@]}
+
+    $_build_dir/${_test_binary}
+}
+
+package_@PACKAGE@() {
+    cmake -DCMAKE_INSTALL_PREFIX="$pkgdir/usr" -P "$_build_dir/cmake_install.cmake" 
+}
+
+md5sums=('SKIP')
