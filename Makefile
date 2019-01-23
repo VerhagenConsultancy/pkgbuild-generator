@@ -1,6 +1,7 @@
 PROJECT_NAME?=UNKNOWN
 SOURCE_DIR?=../$(PROJECT_NAME)
 BUILD_DIR?=../build_package
+PREFIX?=../package
 PKG_IN?=../PKGBUILD.in
 GITCHANGELOG_RC?="../.gitchangelog.rc"
 
@@ -20,8 +21,6 @@ SRC_INFO_FILE:=$(BUILD_DIR)/$(SRC_INFO_FILE_NAME)
 GIT_DESCRIBE:=$(shell git -C $(SOURCE_DIR) describe --tags --long "--match=v*.*.*" 2>/dev/null || git -C $(SOURCE_DIR) log -n1 --pretty=format:g%h)
 VERSION:=$(subst -,_,$(GIT_DESCRIBE))
 COMMIT:=$(shell git -C $(SOURCE_DIR) log -n1 --pretty=format:%H)
-
-PREFIX:=package
 
 all: build
 
