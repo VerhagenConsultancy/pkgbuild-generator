@@ -5,6 +5,9 @@ PREFIX?=../package
 PKG_IN?=../PKGBUILD.in
 GITCHANGELOG_RC?="../.gitchangelog.rc"
 
+PKGREL?=1
+EPOCH?=
+
 CURDIR:=$(shell pwd)
 
 CHANGELOG:=$(PROJECT_NAME).changelog
@@ -18,12 +21,11 @@ PKG_TEMP:=$(shell mktemp --dry-run $(PKG_TEMP_TEMPLATE).XXX)
 SRC_INFO_FILE_NAME:=.SRCINFO
 SRC_INFO_FILE:=$(BUILD_DIR)/$(SRC_INFO_FILE_NAME)
 
-GIT_DESCRIBE:=$(shell git -C $(SOURCE_DIR) describe --tags --long "--match=*.*.*" 2>/dev/null || echo "0.0.0")
-VERSION?=$(subst -,_,$(GIT_DESCRIBE))
-COMMIT?=$(shell git -C $(SOURCE_DIR) log -n1 --pretty=format:%H)
-
-# Only set epoch when no version is given. When set, the epoch is the number of commits in the branch.
-EPOCH?=$(shell git -C $(SOURCE_DIR) describe --tags --long "--match=*.*.*" 1>/dev/null 2>&1 || git -C $(SOURCE_DIR) rev-list --count HEAD)
+COMMIT:=$(shell git -C $(SOURCE_DIR) rev-parse HEAD)
+SHORT_COMMIT:=$(shell git -C $(SOURCE_DIR) rev-parse --short HEAD)
+COMMIT_NUMBER:=$(shell git -C $(SOURCE_DIR) rev-list --count HEAD)
+VERSION_DESCRIBE:=$(shell git -C $(SOURCE_DIR) describe --tags --long "--match=*.*.*" 2>/dev/null || printf "r%s.%s" "$(COMMIT_NUMBER)" "$(SHORT_COMMIT)")
+VERSION?=$(subst -,_,$(VERSION_DESCRIBE))
 
 all: build
 
@@ -41,6 +43,7 @@ $(BUILD_DIR)/$(PKG_FILE): $(BUILD_DIR) $(PKG_IN)
 	sed -i "s/@VERSION@/$(VERSION)/g" $(BUILD_DIR)/$(PKG_TEMP)
 	sed -i "s/@GIT_REF@/commit=$(COMMIT)/g" $(BUILD_DIR)/$(PKG_TEMP)
 	sed -i "s/@CHANGELOG@/$(CHANGELOG)/g" $(BUILD_DIR)/$(PKG_TEMP)
+	sed -i "s/@PKGREL@/$(PKGREL)/g" $(BUILD_DIR)/$(PKG_TEMP)
 	sed -i "s/@EPOCH@/$(EPOCH)/g" $(BUILD_DIR)/$(PKG_TEMP)
 	mv $(BUILD_DIR)/$(PKG_TEMP) $(BUILD_DIR)/$(PKG_FILE)
 

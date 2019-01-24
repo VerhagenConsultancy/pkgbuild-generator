@@ -2,7 +2,7 @@
 pkgname=('@PACKAGE@')
 pkgbase='@PACKAGE@'
 pkgver=@VERSION@
-pkgrel=1
+pkgrel=@PKGREL@
 epoch=@EPOCH@
 pkgdesc="<description>"
 arch=('any')
