@@ -39,6 +39,7 @@ $(BUILD_DIR)/$(CHANGELOG): $(BUILD_DIR)
 
 $(BUILD_DIR)/$(PKG_FILE): $(BUILD_DIR) $(PKG_IN)
 	cp $(PKG_IN) $(BUILD_DIR)/$(PKG_TEMP)
+	sed -i "s/@PACKAGE@/$(PROJECT_NAME)/g" $(BUILD_DIR)/$(PKG_TEMP)
 	sed -i "s/@UNRELEASED@/$(VERSION)/g" $(BUILD_DIR)/$(PKG_TEMP)
 	sed -i "s/@VERSION@/$(VERSION)/g" $(BUILD_DIR)/$(PKG_TEMP)
 	sed -i "s/@GIT_REF@/$(COMMIT)/g" $(BUILD_DIR)/$(PKG_TEMP)
@@ -48,9 +49,8 @@ $(BUILD_DIR)/$(PKG_FILE): $(BUILD_DIR) $(PKG_IN)
 	mv $(BUILD_DIR)/$(PKG_TEMP) $(BUILD_DIR)/$(PKG_FILE)
 
 pkgbuild:: $(BUILD_DIR)/$(PKG_FILE) $(BUILD_DIR)/$(CHANGELOG)
-	sed -i "s/@PACKAGE@/$(PROJECT_NAME)/g" $(BUILD_DIR)/$(PKG_FILE)
 
-$(SRC_INFO_FILE): $(PKGBUILD) $(BUILD_DIR)
+$(SRC_INFO_FILE): $(BUILD_DIR)/$(PKG_FILE)
 	cd $(BUILD_DIR) && makepkg --printsrcinfo > $(SRC_INFO_FILE_NAME)
 
 prepare: pkgbuild $(SRC_INFO_FILE)
