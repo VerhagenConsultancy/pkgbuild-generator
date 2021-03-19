@@ -20,7 +20,7 @@ backup=()
 options=()
 install=
 changelog=@CHANGELOG@
-source=('@PACKAGE@::git+$url.git#@GIT_REF@')
+source=('@PACKAGE@::git+$url.git#commit=@GIT_REF@')
 noextract=()
 validpgpkeys=()
 
